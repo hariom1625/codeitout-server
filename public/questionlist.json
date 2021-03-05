@@ -1,0 +1,25 @@
+[
+
+{
+"id":1,
+"problemName":"ATM",
+"input":"16 25",
+"ans":"16 25",
+"problemDesc":"Pooja would like to withdraw X $US from an ATM. The cash machine will only accept the transaction if X is a multiple of 5, and Pooja's account balance has enough cash to perform the withdrawal transaction (including bank charges). For each successful withdrawal the bank charges 0.50 $US. Calculate Pooja's account balance after an attempted transaction.",
+"problemInputDesc":"Pooja would like to withdraw X $US from an ATM. The cash machine will only accept the transaction if X is a multiple of 5, and Pooja's account balance has enough cash to perform the withdrawal transaction (including bank charges). For each successful withdrawal the bank charges 0.50 $US. Calculate Pooja's account balance after an attempted transaction.",
+"problemOutputDesc":"Output the account balance after the attempted transaction, given as a number with two digits of precision. If there is not enough money in the account to complete the transaction, output the current bank balance."
+
+},
+{
+"id":2,
+"problemName":"Valid Triangles ",
+"input":"25 16",
+"ans":"25 16",
+"problemDesc":"Write a program to check whether a triangle is valid or not, when the three angles of the triangle are the inputs. A triangle is valid if the sum of all the three angles is equal to 180 degrees.",
+"problemInputDesc":"The first line contains an integer T, the total number of testcases. Then T lines follow, each line contains\n three angles A, B and C, of the triangle separated by space.",
+"problemOutputDesc":"For each test case, display 'YES' if the triangle is valid, and 'NO', if it is not, in a new line."
+
+}
+
+
+]
