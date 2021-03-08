@@ -18,7 +18,16 @@ app.get("/",function(req,res){
 res.send("Hello World eee!!")
 });
 
-app.listen(process.env.PORT||4000, () => console.log("Server started on Port: 4000"));
+const question = require('./routes/QuestionList');
+app.use('/api/question',question);
+
+
+
+let port = process.env.PORT;
+if(port== null || port == ""){
+port = 4000;
+}
+app.listen(port, () => console.log("Server started on Port: 4000"));
 
 // app.get("/",function(req,res){
 // // res.send({message :"Hello World !!"})
