@@ -11,9 +11,6 @@ const jwt = require('jsonwebtoken');
 
 connectDB();
 
-app.use(passport.initialize())
-app.use(passport.session())
-
 
 // require('./config/passport')(passport)
 

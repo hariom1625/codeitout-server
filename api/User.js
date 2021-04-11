@@ -45,7 +45,7 @@ router.post('/signup', async (req, res) => {
             if (result.error)
                   res.status(400).send(result.error.message)
             else {
-                  console.log("Syntax Validated")
+                  // console.log("Syntax Validated")
                   // console.log(result.error)
 
                   const checkUser = await User.findOne({ // check if emaila already taken
@@ -83,10 +83,10 @@ router.post('/signup', async (req, res) => {
                         smtpTransport.sendMail(mail, function(error, response) {
 
                               if (error) {
-                                    console.log(error)
+                                    // console.log(error)
                               } else {
 
-                                    console.log("Email sent successfully!!!!!")
+                                    // console.log("Email sent successfully!!!!!")
                               }
 
                               smtpTransport.close()
@@ -145,8 +145,8 @@ router.post('/ques-done', authenticateToken, async (req, res) => {
             })
 
             const chk = q.questionSolved.find((qu) => qu.name === req.body.name)
-            console.log(q.questionSolved, "Que")
-            console.log(chk)
+            // console.log(q.questionSolved, "Que")
+            // console.log(chk)
             if (!chk || q.questionSolved.length === 0) {
                   q.questionSolved.push(que);
             } else {
@@ -168,7 +168,6 @@ router.put('/forgotPwd', async (req, res) => {
             if (result.error)
                    res.status(400).send('Password must be same.')
             else {
-                  console.log("Syntax Validated")
                   const user = await User.findOne({
                         "email": req.body.email
                   })
@@ -206,10 +205,10 @@ router.put('/forgotPwd', async (req, res) => {
                               smtpTransport.sendMail(mail, function(error, response) {
 
                                     if (error) {
-                                          console.log(error)
+                                          // console.log(error)
                                     } else {
 
-                                          console.log("Email sent successfully!!!!!")
+                                          // console.log("Email sent successfully!!!!!")
                                     }
 
                                     smtpTransport.close()
@@ -235,7 +234,6 @@ router.put('/forgotPwd', async (req, res) => {
 
 router.put('/forgotPwdVerify', async (req, res) => {
       const urlToken = req.body.otp
-console.log(urlToken)
 
       const checkToken = await VerifyToken.findOne({ // check if secretToken is present
             "secretToken": urlToken
@@ -243,7 +241,6 @@ console.log(urlToken)
       const checkTokenUser = await User.findOne({ // check if secretToken is present
             "secretToken": urlToken
       })
-console.log(checkToken,checkTokenUser)
       if (checkToken && checkTokenUser) {
             checkTokenUser.password = checkTokenUser.resetPwd
             checkTokenUser.save();
@@ -274,10 +271,12 @@ router.post('/verify', async (req, res) => {
             User.findOneAndDelete({
                   "secretToken": urlToken
             }, function(err, docs) {
-                  if (err)
-                        console.log(err)
-                  else
-                        console.log(docs, "docs Deleted")
+                  if (err){
+                        // console.log(err)
+}
+                  else{
+                        // console.log(docs, "docs Deleted")
+}
             })
             res.status(400).send("Invalid Token verify")
       }
@@ -285,15 +284,17 @@ router.post('/verify', async (req, res) => {
 })
 
 router.post('/deleteUser', async (req, res) => {
-      console.log(req.body.secretToken)
+      // console.log(req.body.secretToken)
       const secretToken = req.body.secretToken
       User.findOneAndDelete({
             "secretToken": secretToken
       }, function(err, docs) {
-            if (err)
-                  console.log(err)
-            else
-                  console.log(docs, "docs Deleted")
+            if (err){
+                  // console.log(err)
+}
+            else{
+                  // console.log(docs, "docs Deleted")
+}
       })
 
 
@@ -320,11 +321,11 @@ router.post('/login', async (req, res) => {
 
 
       if (user === null) {
-            console.log("User Not Registered.....!!!!!")
+            // console.log("User Not Registered.....!!!!!")
             return res.status(400).send('Not Registered')
       } else if (user.active === false) {
 
-            console.log("Email Address Not Verified")
+            // console.log("Email Address Not Verified")
             return res.status(400).send('Email Address Not Verified')
 
       }
@@ -334,7 +335,7 @@ router.post('/login', async (req, res) => {
             const pass = user.password
 
             if (await bcrypt.compare(req.body.password, pass)) {
-                  console.log("Login Success");
+                  // console.log("Login Success");
                   newRefreshToken.refreshToken = refreshToken
                   let RefreshTokenModel = new RefreshToken(newRefreshToken)
                   await RefreshTokenModel.save();
@@ -348,7 +349,7 @@ router.post('/login', async (req, res) => {
 
             } else {
                   res.send(false)
-                  console.log('Wrong Password')
+                  // console.log('Wrong Password')
             }
       } catch {
             res.status(500).send()
@@ -368,7 +369,7 @@ router.get('/login-success', authenticateToken, async (req, res) => {
 
 router.put('/login-success', authenticateToken, async (req, res) => {
 
-      console.log(req.data.name)
+      // console.log(req.data.name)
       const user = await User.findOne({
             "username": req.data.name
       })
@@ -380,20 +381,20 @@ router.put('/login-success', authenticateToken, async (req, res) => {
 })
 
 
-
-function whereFalse(req, res, next) { // delete data with active state false from database
-
-      User.deleteMany({
-            "active": false
-      }, function(err, docs) {
-            if (err)
-                  console.log(err)
-            else
-                  console.log(docs, "All active-false member deleted")
-      })
-
-      next()
-}
+//
+// function whereFalse(req, res, next) { // delete data with active state false from database
+//
+//       User.deleteMany({
+//             "active": false
+//       }, function(err, docs) {
+//             if (err)
+//                   // console.log(err)
+//             else
+//                   // console.log(docs, "All active-false member deleted")
+//       })
+//
+//       next()
+// }
 
 
 router.post('/token', async (req, res) => {
@@ -423,10 +424,12 @@ router.delete('/logout-refreshToken', async (req, res) => {
       await RefreshToken.findOneAndDelete({
             "refreshToken": req.body.token
       }, function(err, docs) {
-            if (err)
-                  console.log(err)
-            else
-                  console.log(docs, "RefreshToken Deleted")
+            if (err){
+                  // console.log(err)
+}
+            else{
+                  // console.log(docs, "RefreshToken Deleted")
+}
       })
 
       res.status(204).send("RefreshToken Deleted")
@@ -469,7 +472,7 @@ function authenticateToken(req, res, next) {
       if (token == null) return res.sendStatus(401)
 
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
-            console.log(err)
+            // console.log(err)
             if (err) return res.sendStatus(403)
             req.data = data
             next()
