@@ -2,16 +2,31 @@
   "name": "codeitout-backend",
   "version": "1.0.0",
   "description": "Compiler backend",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "devserver": "nodemon index.js",
+    "devauth": "nodemon authServer.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Hari Om Yadav",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cookie-parser": "^1.4.5",
+    "cookie-session": "^1.4.0",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "nodemon": "^2.0.7"
+    "express-session": "^1.17.1",
+    "joi": "^17.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.12.2",
+    "nodemailer": "^6.5.0",
+    "nodemon": "^2.0.7",
+    "passport": "^0.4.1",
+    "passport-google-oauth": "^2.0.0",
+    "passport-local": "^1.0.0",
+    "randomstring": "^1.1.5",
+    "router": "^1.3.5"
   }
 }
