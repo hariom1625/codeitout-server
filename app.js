@@ -8,21 +8,14 @@ const app = express();
 const session = require('express-session')
 
 const jwt = require('jsonwebtoken');
-passport = require('passport');
-Auth = require('./Auth');
 
 connectDB();
 
-app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: false
-}))
 app.use(passport.initialize())
 app.use(passport.session())
 
 
-require('./config/passport')(passport)
+// require('./config/passport')(passport)
 
 
 cors = require("cors");
@@ -53,7 +46,7 @@ app.use(express.json({
 app.use(express.static(path.join(__dirname, "..", "build")));
 app.use(express.static("public"));
 
-app.use('/Auth',require('./Auth'))
+// app.use('/Auth',require('./Auth'))
 app.use('/api/question', require('./api/Question'));
 
 // app.get("/", function(req, res) {
