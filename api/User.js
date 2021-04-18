@@ -38,7 +38,7 @@ const pwdSchema = Joi.object().keys({
 })
 
 
-router.post('/signup', async (req, res) => {
+router.post('/signup',authenticateTokenlocal, async (req, res) => {
       try {
 
             const result = userSchema.validate(req.body) // check syntax of user input
@@ -161,7 +161,7 @@ router.post('/ques-done', authenticateToken, async (req, res) => {
 })
 
 
-router.put('/forgotPwd', async (req, res) => {
+router.put('/forgotPwd',authenticateTokenlocal, async (req, res) => {
       try {
 
             const result = pwdSchema.validate(req.body) // check syntax of user input
@@ -232,7 +232,7 @@ router.put('/forgotPwd', async (req, res) => {
 
 })
 
-router.put('/forgotPwdVerify', async (req, res) => {
+router.put('/forgotPwdVerify',authenticateTokenlocal, async (req, res) => {
       const urlToken = req.body.otp
 
       const checkToken = await VerifyToken.findOne({ // check if secretToken is present
@@ -252,7 +252,7 @@ router.put('/forgotPwdVerify', async (req, res) => {
 
 
 })
-router.post('/verify', async (req, res) => {
+router.post('/verify',authenticateTokenlocal, async (req, res) => {
       const urlToken = req.body.otp
 
 
@@ -283,7 +283,7 @@ router.post('/verify', async (req, res) => {
 
 })
 
-router.post('/deleteUser', async (req, res) => {
+router.post('/deleteUser',authenticateTokenlocal, async (req, res) => {
       // console.log(req.body.secretToken)
       const secretToken = req.body.secretToken
       User.findOneAndDelete({
@@ -302,7 +302,7 @@ router.post('/deleteUser', async (req, res) => {
 })
 
 
-router.post('/login', async (req, res) => {
+router.post('/login', authenticateTokenlocal,async (req, res) => {
       const username = req.body.username
       const data = {
             name: username
@@ -381,23 +381,7 @@ router.put('/login-success', authenticateToken, async (req, res) => {
 })
 
 
-//
-// function whereFalse(req, res, next) { // delete data with active state false from database
-//
-//       User.deleteMany({
-//             "active": false
-//       }, function(err, docs) {
-//             if (err)
-//                   // console.log(err)
-//             else
-//                   // console.log(docs, "All active-false member deleted")
-//       })
-//
-//       next()
-// }
-
-
-router.post('/token', async (req, res) => {
+router.post('/token',authenticateTokenlocal, async (req, res) => {
       const refreshToken = req.body.token
 
       if (refreshToken === null) return res.sendStatus(401)
@@ -419,7 +403,7 @@ router.post('/token', async (req, res) => {
 })
 
 
-router.delete('/logout-refreshToken', async (req, res) => {
+router.delete('/logout-refreshToken',authenticateTokenlocal, async (req, res) => {
 
       await RefreshToken.findOneAndDelete({
             "refreshToken": req.body.token
@@ -428,7 +412,7 @@ router.delete('/logout-refreshToken', async (req, res) => {
                   // console.log(err)
 }
             else{
-                  // console.log(docs, "RefreshToken Deleted")
+                  res.send("RefreshToken Deleted")
 }
       })
 
@@ -477,6 +461,22 @@ function authenticateToken(req, res, next) {
             req.data = data
             next()
       })
+}
+
+function authenticateTokenlocal(req, res, next) {
+
+      const authHeader = req.headers['authorization']
+      const token = authHeader && authHeader.split(' ')[1]
+      if (token == null) return res.sendStatus(401)
+
+if(token===process.env.TC_TOKEN){
+      next()
+}
+else{
+      return res.sendStatus(403)
+
+}
+
 }
 
 module.exports = router;

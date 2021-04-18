@@ -9,10 +9,11 @@ const session = require('express-session')
 
 const jwt = require('jsonwebtoken');
 
+
 connectDB();
 
 
-// require('./config/passport')(passport)
+
 
 
 cors = require("cors");
@@ -43,8 +44,7 @@ app.use(express.json({
 app.use(express.static(path.join(__dirname, "..", "build")));
 app.use(express.static("public"));
 
-// app.use('/Auth',require('./Auth'))
-app.use('/api/question', require('./api/Question'));
+app.use('/api/question',authenticateToken, require('./api/Question'));
 
 // app.get("/", function(req, res) {
 //       res.send("Hello World eee!!")
@@ -57,21 +57,21 @@ app.use('/api/user', require('./api/User'));
 //       res.json(posts.filter(post => post.username === req.body.username))
 // })
 
-// function authenticateToken(req, res, next) {
-//
-//       const authHeader = req.headers['authorization']
-//       const token = authHeader && authHeader.split(' ')[1]
-//       if (token == null) return res.sendStatus(401)
-//
-//       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-//             console.log(err)
-//             if (err) return res.sendStatus(403)
-//             req.user = user
-//             next()
-//       })
-// }
+function authenticateToken(req, res, next) {
 
+      const authHeader = req.headers['authorization']
+      const token = authHeader && authHeader.split(' ')[1]
+      if (token == null) return res.sendStatus(401)
 
+if(token===process.env.TC_TOKEN){
+      next()
+}
+else{
+      return res.sendStatus(403)
+
+}
+
+}
 
 let port = process.env.PORT;
 if (port == null || port == "") {

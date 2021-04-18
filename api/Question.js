@@ -6,7 +6,7 @@ const Question = require('../db/Question');
 const Answer = require('../db/Answer');
 
 const router = express.Router();
-router.get('/answer/:id', authenticateToken, async (req, res) => {
+router.get('/answer/:id', async (req, res) => {
       const ansid = req.params.id
 console.log(ansid)
       const tcAns = await Answer.findOne({
@@ -17,10 +17,10 @@ const tc = {
 "input":tcAns.input,
 "ans":tcAns.ans
 }
-      res.json(tc)
+      res.json("TC Added")
 });
 
-router.get('/', authenticateToken,async (req, res) => {
+router.get('/',async (req, res) => {
 
       const ques = await Question.find().sort({
             order: 1
@@ -30,7 +30,7 @@ router.get('/', authenticateToken,async (req, res) => {
 });
 
 
-router.get('/:id',authenticateToken, async (req, res) => {
+router.get('/:id', async (req, res) => {
       const queId = req.params.id;
       // const getQue = ques.indexOf(queId);
       // const getQue = ques.find((que) => que.id===queId);
@@ -48,7 +48,7 @@ router.get('/:id',authenticateToken, async (req, res) => {
 
 })
 
-router.post('/', authenticateToken,async (req, res) => {
+router.post('/', async (req, res) => {
 
       const newQuestion = new Question();
 
@@ -62,7 +62,7 @@ router.post('/', authenticateToken,async (req, res) => {
 
       newQuestion.problemOutputDesc = req.body.problemOutputDesc;
       newQuestion.time = req.body.time;
-
+newQuestion.author = req.body.author
       // newQuestion.save();
 
       let questionModel = new Question(newQuestion);
@@ -73,7 +73,7 @@ router.post('/', authenticateToken,async (req, res) => {
 
 });
 
-router.post('/addAnswer',authenticateToken, async (req, res) => {
+router.post('/addAnswer', async (req, res) => {
 
       const newAnswer = new Answer();
 
@@ -90,7 +90,7 @@ router.post('/addAnswer',authenticateToken, async (req, res) => {
 
       await answerModel.save();
 
-      res.json("TC Added");
+      res.json(answerModel);
 
 });
 
