@@ -23,12 +23,7 @@ const questionList = new mongoose.Schema({
       time: {
             type: String
       },
-      input: {
-            type: String
-      },
-      ans: {
-            type: String
-      },
+
 author:{
 type:String
 }
