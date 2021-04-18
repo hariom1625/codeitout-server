@@ -20,7 +20,7 @@ const tc = {
       res.json(tc)
 });
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken,async (req, res) => {
 
       const ques = await Question.find().sort({
             order: 1
@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
 });
 
 
-router.get('/:id', async (req, res) => {
+router.get('/:id',authenticateToken, async (req, res) => {
       const queId = req.params.id;
       // const getQue = ques.indexOf(queId);
       // const getQue = ques.find((que) => que.id===queId);
@@ -48,7 +48,7 @@ router.get('/:id', async (req, res) => {
 
 })
 
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken,async (req, res) => {
 
       const newQuestion = new Question();
 
@@ -73,7 +73,7 @@ router.post('/', async (req, res) => {
 
 });
 
-router.post('/addAnswer', async (req, res) => {
+router.post('/addAnswer',authenticateToken, async (req, res) => {
 
       const newAnswer = new Answer();
 
