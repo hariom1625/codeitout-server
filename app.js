@@ -11,13 +11,18 @@ const jwt = require('jsonwebtoken');
 
 
 connectDB();
-
-
-
-
-
 cors = require("cors");
-app.use(cors());
+
+
+
+var corsOptions = {
+
+      origin: 'http://localhost:3000',
+      optionsSuccessStatus: 200
+}
+
+app.use(cors(corsOptions));
+
 // app.use(function(req, res, next) {
 //   res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
 //   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -27,24 +32,10 @@ app.use(express.json({
       extended: false
 }));
 
-
-//
-// const posts = [{
-//             username: "Hello",
-//             title: "Post 1"
-//       },
-//       {
-//             username: "World",
-//             title: "Post 2"
-//
-//       }
-// ]
-
-
 app.use(express.static(path.join(__dirname, "..", "build")));
 app.use(express.static("public"));
 
-app.use('/api/question',authenticateToken, require('./api/Question'));
+app.use('/api/question', require('./api/Question'));
 
 // app.get("/", function(req, res) {
 //       res.send("Hello World eee!!")
@@ -57,21 +48,7 @@ app.use('/api/user', require('./api/User'));
 //       res.json(posts.filter(post => post.username === req.body.username))
 // })
 
-function authenticateToken(req, res, next) {
 
-      const authHeader = req.headers['authorization']
-      const token = authHeader && authHeader.split(' ')[1]
-      if (token == null) return res.sendStatus(401)
-
-if(token===process.env.TC_TOKEN){
-      next()
-}
-else{
-      return res.sendStatus(403)
-
-}
-
-}
 
 let port = process.env.PORT;
 if (port == null || port == "") {

@@ -1,54 +1,14 @@
 const express = require('express');
 
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 const Question = require('../db/Question');
 const Answer = require('../db/Answer');
 
 const router = express.Router();
-router.get('/answer/:id', async (req, res) => {
-      const ansid = req.params.id
-console.log(ansid)
-      const tcAns = await Answer.findOne({
-            "problemCode":ansid
-      });
-const tc = {
 
-"input":tcAns.input,
-"ans":tcAns.ans
-}
-      res.json("TC Added")
-});
-
-router.get('/',async (req, res) => {
-
-      const ques = await Question.find().sort({
-            order: 1
-      });
-
-      res.json(ques);
-});
-
-
-router.get('/:id', async (req, res) => {
-      const queId = req.params.id;
-      // const getQue = ques.indexOf(queId);
-      // const getQue = ques.find((que) => que.id===queId);
-      const getQue = await Question.find({
-            "problemCode": queId
-      });
-      // console.log(ques.find(que => que.id===queId));
-
-
-      if (!getQue) {
-            res.status(500).send('Question not found')
-      } else {
-            res.json(getQue);
-      }
-
-})
-
-router.post('/', async (req, res) => {
+router.post('/',  authenticateTokenLocal,async (req, res) => {
 
       const newQuestion = new Question();
 
@@ -73,7 +33,7 @@ newQuestion.author = req.body.author
 
 });
 
-router.post('/addAnswer', async (req, res) => {
+router.post('/addAnswer',authenticateTokenLocal, async (req, res) => {
 
       const newAnswer = new Answer();
 
@@ -94,20 +54,88 @@ router.post('/addAnswer', async (req, res) => {
 
 });
 
+router.post('/checkAnswer',authenticateToken, async(req,res)=>{
+const id = req.body.ans.link
+const tcAns = await Answer.findOne({
+      "problemCode":id
+});
+if(req.body.ans.t1===tcAns.ans){
+res.send(200)
+}
+else{
+res.send(400)
+}
+})
 
-function authenticateToken(req, res, next) {
+router.get('/',authenticateTokenLocal,async (req, res) => {
+
+      const ques = await Question.find().sort({
+            order: 1
+      });
+
+      res.json(ques);
+});
+
+
+router.get('/:id',authenticateTokenLocal, async (req, res) => {
+      const queId = req.params.id;
+      // const getQue = ques.indexOf(queId);
+      // const getQue = ques.find((que) => que.id===queId);
+      const getQue = await Question.find({
+            "problemCode": queId
+      });
+      // console.log(ques.find(que => que.id===queId));
+
+
+      if (!getQue) {
+            res.status(500).send('Question not found')
+      } else {
+            res.json(getQue);
+      }
+
+})
+
+
+router.get('/answer/:id',authenticateToken, async (req, res) => {
+      const ansid = req.params.id
+      const tcAns = await Answer.findOne({
+            "problemCode":ansid
+      });
+const tc = {
+"input":tcAns.input,
+}
+      res.json(tc)
+});
+
+
+function authenticateTokenLocal(req, res, next) {
 
       const authHeader = req.headers['authorization']
       const token = authHeader && authHeader.split(' ')[1]
       if (token == null) return res.sendStatus(401)
 
-if(token===process.env.TC_TOKEN){
-      next()
-}
-else{
-      return res.sendStatus(403)
+      if (token === process.env.TC_TOKEN) {
+            next()
+      } else {
+            return res.sendStatus(403)
+
+      }
 
 }
 
+
+
+function authenticateToken(req, res, next) {
+      const authHeader = req.headers['authorization']
+      const token = authHeader && authHeader.split(' ')[1]
+
+      if (token == null) return res.sendStatus(401)
+
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
+            // console.log(err)
+            if (err) return res.sendStatus(403)
+            req.data = data
+            next()
+      })
 }
 module.exports = router;

@@ -20,5 +20,9 @@ const answer = new mongoose.Schema({
       }
 
 });
-
-module.exports = Answer = mongoose.model('Answer', answer);
+answer.methods.toJSON = function() {
+      var obj = this.toObject();
+      delete obj.ans;
+      return obj;
+};
+module.exports = Answer = mongoose.model('answer', answer);

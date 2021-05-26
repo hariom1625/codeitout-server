@@ -49,7 +49,10 @@ router.post('/signup',authenticateTokenlocal, async (req, res) => {
                   // console.log(result.error)
 
                   const checkUser = await User.findOne({ // check if emaila already taken
-                        "email": req.body.email
+                        "email": req.body.email,
+                  })
+                  const checkUsername = await User.findOne({ // check if emaila already taken
+                        "username": req.body.username,
                   })
 
                   if (checkUser) {
@@ -57,7 +60,14 @@ router.post('/signup',authenticateTokenlocal, async (req, res) => {
 
                         // console.log("already registered")
                         res.status(400).send("E-mail address Already Registered")
-                  } else {
+                  }
+                  else if (checkUsername) {
+
+
+                        // console.log("already registered")
+                        res.status(400).send("Username not available")
+                  }
+else {
                         const newUser = new User();
                         const newVerifyToken = new VerifyToken();
                         const secretToken = randomstring.generate(); // generate secretToken for email verify
@@ -65,7 +75,11 @@ router.post('/signup',authenticateTokenlocal, async (req, res) => {
                         newVerifyToken.secretToken = secretToken
 
                         const smtpTransport = mailer.createTransport({ // nodemailer
-                              service: "Gmail",
+host:'smtp.gmail.com',
+post:465,
+secure:true,
+service: "Gmail",
+
                               auth: {
                                     user: process.env.GMAIL,
                                     pass: process.env.GMAIL_PWD
@@ -119,8 +133,11 @@ router.post('/signup',authenticateTokenlocal, async (req, res) => {
                         //       res.json(userModel);
                         // else
                         //       res.json("Invalid Token")
+                        const q = await User.findOne({
+                              "username": req.body.username
+                        })
 
-                        res.status(200).send("Please Complete E-mail Verification.")
+                        res.json(q._id)
 
                         // console.log(userModel)
 
@@ -158,6 +175,126 @@ router.post('/ques-done', authenticateToken, async (req, res) => {
             res.status(500).send("Something went wrong que-done")
 
       }
+})
+
+router.post('/deleteUser',authenticateTokenlocal, async (req, res) => {
+      // console.log(req.body.secretToken)
+      const secretToken = req.body.secretToken
+      User.findOneAndDelete({
+            "secretToken": secretToken
+      }, function(err, docs) {
+            if (err){
+                  // console.log(err)
+}
+            else{
+                  // console.log(docs, "docs Deleted")
+}
+      })
+
+
+
+})
+
+
+router.post('/login', authenticateTokenlocal,async (req, res) => {
+
+      try {
+
+            const username = req.body.username
+            const data = {
+                  name: username
+            }
+
+            const accessToken = generateAccessToken(data)
+
+            jwt.sign(data, process.env.ACCESS_TOKEN_SECRET)
+            const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET)
+            // refreshTokens.push(refreshToken)
+
+
+            const user = await User.findOne({
+                  "username": req.body.username
+            })
+
+
+            if (user === null) {
+                  // console.log("User Not Registered.....!!!!!")
+                  return res.status(400).send('Not Registered')
+            } else if (user.active === false) {
+
+                  // console.log("Email Address Not Verified")
+                  return res.status(400).send('Email Address Not Verified')
+
+            }
+            const newRefreshToken = new RefreshToken();
+
+            const pass = user.password
+
+            if (await bcrypt.compare(req.body.password, pass)) {
+                  // console.log("Login Success");
+                  newRefreshToken.refreshToken = refreshToken
+                  let RefreshTokenModel = new RefreshToken(newRefreshToken)
+                  await RefreshTokenModel.save();
+                  user.isLoggedIn = true;
+                  user.save();
+                  res.json({
+                        accessToken: accessToken,
+                        refreshToken: refreshToken
+                  })
+
+
+            } else {
+                  res.send(false)
+                  // console.log('Wrong Password')
+            }
+      } catch {
+            res.status(500).send()
+      }
+
+})
+
+router.post('/verify',authenticateTokenlocal, async (req, res) => {
+      const urlToken = req.body.otp
+
+      const checkToken = await VerifyToken.findOne({ // check if secretToken is present
+            "secretToken": urlToken
+      })
+      const checkTokenUser = await User.findOne({ // check if secretToken is present
+            "secretToken": urlToken
+      })
+      if (checkToken && checkTokenUser) {
+            checkTokenUser.active = true
+
+            res.status(201).send("Token verified")
+            checkTokenUser.save();
+      } else {
+            const x = await User.findOneAndDelete({
+                  "_id": req.body.id
+            })
+            res.status(400).send("Invalid Token verify")
+      }
+
+})
+
+router.post('/token',authenticateTokenlocal, async (req, res) => {
+      const refreshToken = req.body.token
+
+      if (refreshToken === null) return res.sendStatus(401)
+      const checkRefreshToken = await RefreshToken.findOne({
+            "refreshToken": refreshToken
+      });
+
+      if (checkRefreshToken === null) return res.status(403).send("Invalid Token")
+      jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+
+            if (err) return res.sendStatus(403)
+            const accessToken = generateAccessToken({
+                  name: user.name
+            })
+            res.json({
+                  accessToken: accessToken
+            })
+      })
 })
 
 
@@ -252,120 +389,6 @@ router.put('/forgotPwdVerify',authenticateTokenlocal, async (req, res) => {
 
 
 })
-router.post('/verify',authenticateTokenlocal, async (req, res) => {
-      const urlToken = req.body.otp
-
-
-      const checkToken = await VerifyToken.findOne({ // check if secretToken is present
-            "secretToken": urlToken
-      })
-      const checkTokenUser = await User.findOne({ // check if secretToken is present
-            "secretToken": urlToken
-      })
-      if (checkToken && checkTokenUser) {
-            checkTokenUser.active = true
-
-            res.status(201).send("Token verified")
-            checkTokenUser.save();
-      } else {
-            User.findOneAndDelete({
-                  "secretToken": urlToken
-            }, function(err, docs) {
-                  if (err){
-                        // console.log(err)
-}
-                  else{
-                        // console.log(docs, "docs Deleted")
-}
-            })
-            res.status(400).send("Invalid Token verify")
-      }
-
-})
-
-router.post('/deleteUser',authenticateTokenlocal, async (req, res) => {
-      // console.log(req.body.secretToken)
-      const secretToken = req.body.secretToken
-      User.findOneAndDelete({
-            "secretToken": secretToken
-      }, function(err, docs) {
-            if (err){
-                  // console.log(err)
-}
-            else{
-                  // console.log(docs, "docs Deleted")
-}
-      })
-
-
-
-})
-
-
-router.post('/login', authenticateTokenlocal,async (req, res) => {
-      const username = req.body.username
-      const data = {
-            name: username
-      }
-
-      const accessToken = generateAccessToken(data)
-
-      jwt.sign(data, process.env.ACCESS_TOKEN_SECRET)
-      const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET)
-      // refreshTokens.push(refreshToken)
-
-
-      const user = await User.findOne({
-            "username": req.body.username
-      })
-
-
-      if (user === null) {
-            // console.log("User Not Registered.....!!!!!")
-            return res.status(400).send('Not Registered')
-      } else if (user.active === false) {
-
-            // console.log("Email Address Not Verified")
-            return res.status(400).send('Email Address Not Verified')
-
-      }
-      try {
-            const newRefreshToken = new RefreshToken();
-
-            const pass = user.password
-
-            if (await bcrypt.compare(req.body.password, pass)) {
-                  // console.log("Login Success");
-                  newRefreshToken.refreshToken = refreshToken
-                  let RefreshTokenModel = new RefreshToken(newRefreshToken)
-                  await RefreshTokenModel.save();
-                  user.isLoggedIn = true;
-                  user.save();
-                  res.json({
-                        accessToken: accessToken,
-                        refreshToken: refreshToken
-                  })
-
-
-            } else {
-                  res.send(false)
-                  // console.log('Wrong Password')
-            }
-      } catch {
-            res.status(500).send()
-      }
-
-})
-
-router.get('/login-success', authenticateToken, async (req, res) => {
-
-
-      const user = await User.findOne({
-            "username": req.data.name
-      })
-      res.send(user.isLoggedIn)
-
-})
 
 router.put('/login-success', authenticateToken, async (req, res) => {
 
@@ -381,44 +404,6 @@ router.put('/login-success', authenticateToken, async (req, res) => {
 })
 
 
-router.post('/token',authenticateTokenlocal, async (req, res) => {
-      const refreshToken = req.body.token
-
-      if (refreshToken === null) return res.sendStatus(401)
-      const checkRefreshToken = await RefreshToken.findOne({
-            "refreshToken": refreshToken
-      });
-
-      if (checkRefreshToken === null) return res.status(403).send("Invalid Token")
-      jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-
-            if (err) return res.sendStatus(403)
-            const accessToken = generateAccessToken({
-                  name: user.name
-            })
-            res.json({
-                  accessToken: accessToken
-            })
-      })
-})
-
-
-router.delete('/logout-refreshToken',authenticateTokenlocal, async (req, res) => {
-
-      await RefreshToken.findOneAndDelete({
-            "refreshToken": req.body.token
-      }, function(err, docs) {
-            if (err){
-                  // console.log(err)
-}
-            else{
-                  res.send("RefreshToken Deleted")
-}
-      })
-
-      res.status(204).send("RefreshToken Deleted")
-})
-
 router.get('/profile', authenticateToken, async (req, res) => {
 
 
@@ -427,7 +412,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
       })
 
       const user = [{
-
+                  "id":q.id,
                   "firstname": q.firstname,
                   "lastname": q.lastname,
                   "username": q.username,
@@ -436,9 +421,40 @@ router.get('/profile', authenticateToken, async (req, res) => {
             }
 
       ]
+      res.send(user);
 
-      res.json(user);
+})
 
+router.get('/login-success', authenticateToken, async (req, res) => {
+
+
+      const user = await User.findOne({
+            "username": req.data.name
+      })
+      res.send(user.isLoggedIn)
+
+})
+
+
+
+
+router.delete('/logout-refreshToken',authenticateTokenlocal, async (req, res) => {
+try{
+      await RefreshToken.findOneAndDelete({
+            "refreshToken": req.body.refreshToken
+      }, function(err, docs) {
+            if (err){
+                  // console.log(err)
+}
+            else{
+                  res.send("RefreshToken Deleted")
+}
+      })
+}
+catch{
+
+      res.status(400).send("Error")
+}
 })
 
 

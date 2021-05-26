@@ -23,7 +23,6 @@ const questionList = new mongoose.Schema({
       time: {
             type: String
       },
-
 author:{
 type:String
 }
