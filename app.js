@@ -17,7 +17,7 @@ cors = require("cors");
 
 var corsOptions = {
 
-      origin: 'http://localhost:3000',
+      origin: 'https://codeitout.netlify.app',
       optionsSuccessStatus: 200
 }
 
