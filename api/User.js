@@ -57,6 +57,35 @@ router.post("/signup", authenticateTokenlocal, async (req, res) => {
       if (checkUser) {
         if (checkUser.active === false) {
           checkUser.secretToken = secretToken;
+          const smtpTransport = mailer.createTransport({
+            // nodemailer
+            host: "smtp.gmail.com",
+            post: 465,
+            secure: true,
+            service: "Gmail",
+
+            auth: {
+              user: process.env.GMAIL,
+              pass: process.env.GMAIL_PWD,
+            },
+          });
+
+          const mail = {
+            from: "Codeitout <codeitout.verify@gmail.com>",
+            to: req.body.email,
+            subject: "Verify your account | CodeItOut",
+            html: `OTP: ${secretToken} `,
+          };
+
+          smtpTransport.sendMail(mail, function (error, response) {
+            if (error) {
+              // console.log(error)
+            } else {
+              // console.log("Email sent successfully!!!!!")
+            }
+
+            smtpTransport.close();
+          });
           const newVerifyToken = new VerifyToken();
           newVerifyToken.secretToken = secretToken;
           let VerifyTokenModel = new VerifyToken(newVerifyToken);
@@ -71,6 +100,35 @@ router.post("/signup", authenticateTokenlocal, async (req, res) => {
       } else if (checkUsername) {
         if (checkUsername.active === false) {
           checkUsername.secretToken = secretToken;
+          const smtpTransport = mailer.createTransport({
+            // nodemailer
+            host: "smtp.gmail.com",
+            post: 465,
+            secure: true,
+            service: "Gmail",
+
+            auth: {
+              user: process.env.GMAIL,
+              pass: process.env.GMAIL_PWD,
+            },
+          });
+
+          const mail = {
+            from: "Codeitout <codeitout.verify@gmail.com>",
+            to: req.body.email,
+            subject: "Verify your account | CodeItOut",
+            html: `OTP: ${secretToken} `,
+          };
+
+          smtpTransport.sendMail(mail, function (error, response) {
+            if (error) {
+              // console.log(error)
+            } else {
+              // console.log("Email sent successfully!!!!!")
+            }
+
+            smtpTransport.close();
+          });
           const newVerifyToken = new VerifyToken();
           newVerifyToken.secretToken = secretToken;
           let VerifyTokenModel = new VerifyToken(newVerifyToken);
