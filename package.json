@@ -4,7 +4,7 @@
   "description": "Compiler backend",
   "main": "server.js",
   "scripts": {
-    "devserver": "nodemon index.js",
+    "devserver": "nodemon app.js",
     "devauth": "nodemon authServer.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
