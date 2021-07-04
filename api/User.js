@@ -65,8 +65,12 @@ router.post("/signup", authenticateTokenlocal, async (req, res) => {
             service: "Gmail",
 
             auth: {
+              type: "OAuth2",
               user: process.env.GMAIL,
-              pass: process.env.GMAIL_PWD,
+              clientId: process.env.CLIENT_ID,
+              clientSecret: process.env.CLIENT_SECRET,
+              refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+              accessToken: process.env.GMAIL_ACCESS_TOKEN,
             },
           });
 
@@ -79,9 +83,9 @@ router.post("/signup", authenticateTokenlocal, async (req, res) => {
 
           smtpTransport.sendMail(mail, function (error, response) {
             if (error) {
-              // console.log(error)
+              console.log(error);
             } else {
-              // console.log("Email sent successfully!!!!!")
+              console.log("Email sent successfully!!!!!");
             }
 
             smtpTransport.close();
@@ -108,8 +112,12 @@ router.post("/signup", authenticateTokenlocal, async (req, res) => {
             service: "Gmail",
 
             auth: {
+              type: "OAuth2",
               user: process.env.GMAIL,
-              pass: process.env.GMAIL_PWD,
+              clientId: process.env.CLIENT_ID,
+              clientSecret: process.env.CLIENT_SECRET,
+              refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+              accessToken: process.env.GMAIL_ACCESS_TOKEN,
             },
           });
 
@@ -122,9 +130,9 @@ router.post("/signup", authenticateTokenlocal, async (req, res) => {
 
           smtpTransport.sendMail(mail, function (error, response) {
             if (error) {
-              // console.log(error)
+              console.log(error);
             } else {
-              // console.log("Email sent successfully!!!!!")
+              console.log("Email sent successfully!!!!!");
             }
 
             smtpTransport.close();
@@ -155,8 +163,12 @@ router.post("/signup", authenticateTokenlocal, async (req, res) => {
           service: "Gmail",
 
           auth: {
+            type: "OAuth2",
             user: process.env.GMAIL,
-            pass: process.env.GMAIL_PWD,
+            clientId: process.env.CLIENT_ID,
+            clientSecret: process.env.CLIENT_SECRET,
+            refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+            accessToken: process.env.GMAIL_ACCESS_TOKEN,
           },
         });
 
@@ -169,9 +181,9 @@ router.post("/signup", authenticateTokenlocal, async (req, res) => {
 
         smtpTransport.sendMail(mail, function (error, response) {
           if (error) {
-            // console.log(error)
+            console.log(error);
           } else {
-            // console.log("Email sent successfully!!!!!")
+            console.log("Email sent successfully!!!!!");
           }
 
           smtpTransport.close();
@@ -375,8 +387,12 @@ router.put("/forgotPwd", authenticateTokenlocal, async (req, res) => {
             // nodemailer
             service: "Gmail",
             auth: {
+              type: "OAuth2",
               user: process.env.GMAIL,
-              pass: process.env.GMAIL_PWD,
+              clientId: process.env.CLIENT_ID,
+              clientSecret: process.env.CLIENT_SECRET,
+              refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+              accessToken: process.env.GMAIL_ACCESS_TOKEN,
             },
           });
 
@@ -389,9 +405,9 @@ router.put("/forgotPwd", authenticateTokenlocal, async (req, res) => {
 
           smtpTransport.sendMail(mail, function (error, response) {
             if (error) {
-              // console.log(error)
+              console.log(error);
             } else {
-              // console.log("Email sent successfully!!!!!")
+              console.log("Email sent successfully!!!!!");
             }
 
             smtpTransport.close();
