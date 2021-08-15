@@ -40,17 +40,15 @@ router.post("/signup", authenticateTokenlocal, async (req, res) => {
   try {
     const secretToken = randomstring.generate();
     const result = userSchema.validate(req.body); // check syntax of user input
-    if (result.error) res.status(400).send(result.error.message);
-    else {
-      // console.log("Syntax Validated")
-      // console.log(result.error)
-
+    if (result.error) {
+      res.status(400).send(result.error.message);
+    } else {
       const checkUser = await User.findOne({
-        // check if emaila already taken
+        // check if email already taken
         email: req.body.email,
       });
       const checkUsername = await User.findOne({
-        // check if emaila already taken
+        // check if username already taken
         username: req.body.username,
       });
 
@@ -226,6 +224,7 @@ router.post("/signup", authenticateTokenlocal, async (req, res) => {
       }
     }
   } catch {
+    console.log("error");
     res.status(500).send("Something went wrong.");
   }
 });
@@ -345,8 +344,7 @@ router.post("/verify", authenticateTokenlocal, async (req, res) => {
 });
 
 router.post("/token", authenticateTokenlocal, async (req, res) => {
-  const refreshToken = req.body.token;
-
+  const refreshToken = req.body.token1;
   if (refreshToken === null) return res.sendStatus(401);
   const checkRefreshToken = await RefreshToken.findOne({
     refreshToken: refreshToken,

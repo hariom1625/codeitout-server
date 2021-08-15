@@ -41,6 +41,8 @@ app.use("/api/question", require("./api/Question"));
 // app.use('/api/mail',require('./api/Mail'));
 app.use("/api/user", require("./api/User"));
 
+app.use("/api/admin", require("./api/Admin"));
+
 // app.get('/posts', authenticateToken, (req, res) => {
 //
 //       res.json(posts.filter(post => post.username === req.body.username))
