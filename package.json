@@ -2,7 +2,7 @@
   "name": "codeitout-backend",
   "version": "1.0.0",
   "description": "Compiler backend",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
     "devserver": "nodemon index.js",
     "devauth": "nodemon authServer.js",
